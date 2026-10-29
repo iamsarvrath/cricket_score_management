@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ScoreDesk | Cricket Operations</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar">
+        <div class="logo"><span>●</span> ScoreDesk</div>
+        <p class="side-label">OPERATIONS</p>
+        <a class="side-link selected" href="#dashboard">▦ <span>Live dashboard</span></a>
+        <a class="side-link" href="#matches">◷ <span>Matches</span></a>
+        <a class="side-link" href="#scorecard">▤ <span>Scorecards</span></a>
+        <p class="side-label">SYSTEM</p>
+        <a class="side-link" href="#players">♙ <span>Players</span></a>
+        <a class="side-link" href="#api">⌁ <span>API status</span></a>
+        <div class="side-bottom"><span class="online-dot"></span> Scoring service<br><small>Connected · Port 8081</small></div>
+    </aside>
+    <main class="content" id="dashboard">
+        <header class="topbar">
+            <div><p class="crumb">TOURNAMENT / MATCH CENTRE</p><h1>Live dashboard</h1></div>
+            <div class="top-actions"><span class="sync"><i></i> Live sync <b id="updated">--:--</b></span><button class="outline" onclick="loadMatches()">Refresh</button></div>
+        </header>
+        <section class="setup card">
+            <div><span class="section-kicker">NEW MATCH</span><h2>Set up match</h2><p>Choose the teams before scoring starts. The innings begins at 0/0.</p></div>
+            <form id="match-form">
+                <input id="batting-team" placeholder="Batting team" value="India" required>
+                <input id="bowling-team" placeholder="Bowling team" value="Australia" required>
+                <input id="match-venue" placeholder="Venue" value="Wankhede Stadium" required>
+                <input id="match-overs" type="number" min="1" max="50" value="20" title="Overs">
+                <input id="match-target" type="number" min="1" value="200" title="Target runs">
+                <button class="primary" type="submit">Start new match</button>
+            </form>
+        </section>
+        <section class="match-strip">
+            <div><span class="live-pill">LIVE</span><strong id="match-title">MATCH</strong><small>Manual scoring · Match 101</small></div>
+            <div class="strip-right"><span id="venue">Wankhede Stadium, Mumbai</span><span class="divider"></span><span>Umpire console active</span></div>
+        </section>
+        <section class="score-layout">
+            <div class="score-main">
+                <div class="innings-head"><div><span class="section-kicker">CURRENT INNINGS</span><h2 id="batting-heading">India batting</h2></div><div class="innings-select" id="innings-label">INNINGS 1 <span>⌄</span></div></div>
+                <div class="score-line"><div class="team-name"><b id="batting-code">IND</b><span id="batting-name">India</span></div><div class="big-score"><strong id="score">0/0</strong><span id="overs">0.0 overs</span><em id="status">LIVE</em></div><div class="team-name opponent"><b id="bowling-code">AUS</b><span id="bowling-name">Australia</span></div></div>
+                <div class="run-rate"><span>Target <b id="target-number">204</b></span><span>Required <b id="required">26</b> runs</span><span>CRR <b id="runRate">9.53</b></span><span>RRR <b id="rrr">9.75</b></span></div>
+                <div class="progress"><div id="progress"></div></div>
+                <div class="delivery-row"><div class="delivery-title">LAST SIX DELIVERIES <small id="over-label">OVER 0</small></div><div id="balls" class="balls"></div></div>
+                <div class="active-players"><span>STRIKER <b id="striker">-</b></span><span>NON-STRIKER <b id="non-striker">-</b></span><span>BOWLER <b id="bowler">-</b></span></div>
+            </div>
+            <aside class="control-panel">
+                <div class="control-title"><span class="record-dot"></span><div><b>SCORING PANEL</b><small>Record next delivery</small></div></div>
+                <div class="select-row"><label>Striker<select id="striker-select"></select></label><label>Bowler<select id="bowler-select"></select></label></div>
+                <div class="control-grid"><button data-runs="0">DOT<span>0</span></button><button data-runs="1">SINGLE<span>1</span></button><button data-runs="2">TWO<span>2</span></button><button data-runs="4">FOUR<span>4</span></button><button data-runs="6">SIX<span>6</span></button><button class="wicket" id="wicket">WICKET<span>W</span></button></div>
+                <div class="extras"><small>EXTRAS (1 RUN)</small><button data-extra="wide">Wide</button><button data-extra="no-ball">No-ball</button><button data-extra="bye">Bye</button><button data-extra="leg-bye">Leg-bye</button></div>
+                <div class="control-footer"><span id="last-action">Ready to record</span><span class="keyboard">Keyboard enabled</span></div>
+                <div class="operator-actions"><button id="undo">↶ Undo last ball</button><button id="reset">Reset innings</button></div>
+            </aside>
+        </section>
+        <section class="lower-grid">
+            <div class="card scorecard" id="scorecard">
+                <div class="card-head"><div><h2>Scorecard</h2><p id="scorecard-subtitle">India · Innings 1</p></div><span class="card-tag">LIVE</span></div>
+                <div class="table-head"><span>BATTER</span><span>R</span><span>B</span><span>SR</span></div>
+                <div id="players-list"></div>
+                <div class="partnership"><span>Extras <b id="extras">0</b> · Fours <b id="fours">0</b> · Sixes <b id="sixes">0</b></span><b>Live innings</b></div>
+            </div>
+            <div class="card commentary">
+                <div class="card-head"><div><h2>Live commentary</h2><p>Ball-by-ball feed</p></div><span class="live-text"><i></i> Updating</span></div>
+                <div id="commentary-list"></div>
+            </div>
+        </section>
+        <section class="card matches" id="matches">
+            <div class="card-head"><div><h2>Match schedule</h2><p>All tournament fixtures</p></div><button class="outline small" onclick="loadMatches()">Refresh list</button></div>
+            <div id="match-list"></div>
+        </section>
+        <footer id="api"><span>ScoreDesk API</span> · REST services connected · Manual scoring mode · <a href="/api/matches/live" target="_blank">View live JSON</a></footer>
+    </main>
+</div>
+<div id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
